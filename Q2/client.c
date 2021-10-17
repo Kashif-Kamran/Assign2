@@ -62,9 +62,9 @@ int main()
     }
     else if (!strcmp(choice, "3"))
     {
-        printf("Enter String : ");
+        printf("Enter First String  : ");
         gets(str1);
-        printf("Enter Character : ");
+        printf("Enter Second String  : ");
         gets(str2);
         send(sockfd, str1, sizeof(str1), 0);
         send(sockfd, str2, sizeof(str2), 0);
@@ -73,6 +73,11 @@ int main()
     }
     else if (!strcmp(choice, "4"))
     {
+        printf("Enter String : ");
+        gets(str1);
+        send(sockfd, str1, sizeof(str1), 0);
+        recv(sockfd, msgRecv, sizeof(msgRecv), 0);
+        printf("Result : %s\n", msgRecv);
     }
     else if (!strcmp(choice, "5"))
     {

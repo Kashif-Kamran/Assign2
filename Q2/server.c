@@ -20,6 +20,18 @@ void manu()
     printf("4. For Checking Palindrom String\n");
     printf("5. For Adding String Numbers\n\n");
 }
+int palindrom(char *str)
+{
+    int len = strlen(str) - 1;
+    for (int i = 0; i < len; i++)
+    {
+        if (str[i] != str[len - i])
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
 int stringsComparison(char *str1, char *str2)
 {
     int i = 0;
@@ -140,6 +152,17 @@ int main()
             else if (!strcmp(choice, "4"))
             {
                 send(clientSocket, "Send One String to find whether it is palindrom or not", 56, 0);
+                recv(clientSocket, str1, sizeof(str1), 0);
+                printf("String 1 : %s\n", str1);
+                int check = palindrom(str1);
+                if (check == 0)
+                {
+                    strcpy(msgSend, "False");
+                }
+                else
+                {
+                    strcpy(msgSend, "True");
+                }
             }
             else if (!strcmp(choice, "5"))
             {
