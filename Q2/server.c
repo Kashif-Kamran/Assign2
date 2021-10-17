@@ -45,12 +45,19 @@ int main()
     /* -------------------------------------------------------------------------- */
     /*                            Welcomeing Port Code                            */
     /* -------------------------------------------------------------------------- */
-
-    int clientSocket = accept(server_socket, NULL, NULL);
-    printf("______Connection Established______\n");
-    recv(clientSocket, msgRecv, sizeof(msgRecv), 0);
-    printf("Msg Received : %s\n", msgRecv);
-    send(clientSocket, msgSend, sizeof(msgSend), 0);
+    while (1)
+    {
+        int clientSocket = accept(server_socket, NULL, NULL);
+        printf("______Connection Established______\n");
+        pid_t pid = fork();
+        if (pid == 0)
+        {
+            printf("new process Created");
+            recv(clientSocket, msgRecv, sizeof(msgRecv), 0);
+            printf("Msg Received : %s\n", msgRecv);
+            send(clientSocket, msgSend, sizeof(msgSend), 0);
+        }
+    }
     close(server_socket);
     return 0;
 }
