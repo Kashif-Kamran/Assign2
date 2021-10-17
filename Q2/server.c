@@ -9,64 +9,48 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#define PORT 4444
+#define PORT 9999
 #define MAXLINE 1024
 int main()
 {
     printf("\n_______ Server Side _______\n\n");
-    int sockfd, ret;
-    int newSocket;
 
-    socklen_t addr_size;
-    struct sockaddr_in serverAddr;
-    struct sockaddr_in newAddr;
+    /* ----------------------- Variables to Store the Data ---------------------- */
+    char msgSend[MAXLINE] = "I got you msg";
+    char msgRecv[MAXLINE];
 
-    char buffer[1024];
-    pid_t childpid;
+    /* -------------------------------------------------------------------------- */
+    /*                               Connection Code                              */
+    /* -------------------------------------------------------------------------- */
 
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0)
+    /* -------------------------- 1.creation of Socket -------------------------- */
+    int server_socket;
+    server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_socket < 0)
     {
-        printf(" [__ Error Socket Creation __]\n");
-        exit(1);
+        perror("=== Socket Creation Failed ===\n");
+        exit(EXIT_FAILURE);
     }
-    printf("[__ Socket Created __]\n");
+    struct sockaddr_in server_address;
+    server_address.sin_family = AF_INET;
+    server_address.sin_port = htons(PORT);
+    server_address.sin_addr.s_addr = INADDR_ANY;
 
-    memset(&serverAddr, '\0', sizeof(serverAddr));
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(PORT);
-    serverAddr.sin_addr.s_addr = INADDR_ANY;
+    /* ------------------------ 2. Binding And Listening ------------------------ */
+    bind(server_socket, (struct sockaddr *)&server_address, sizeof(server_address));
+    printf("______Binding Successfull______\n");
+    listen(server_socket, 0);
+    printf("______Server is on Listening Mode______\n ");
 
-    ret = bind(sockfd, (struct sockaddr *)&serverAddr, sizeof(serverAddr));
+    /* -------------------------------------------------------------------------- */
+    /*                            Welcomeing Port Code                            */
+    /* -------------------------------------------------------------------------- */
 
-    if (ret < 0)
-    {
-        printf("[__ Error in binding __]\n");
-        exit(1);
-    }
-    printf("[__ Bind to port __] \n");
-
-    int listn = listen(sockfd, 3);
-    printf("[__ Listening __]\n");
-
-    while (1)
-    {
-        newSocket = accept(sockfd, (struct sockaddr *)&newAddr, &addr_size);
-        if (newSocket < 0)
-        {
-            printf("[__ New Connection Not Connected __]\n");
-            exit(1);
-        }
-        printf("[__ New Connection Accepted __]\n");
-        pid_t pid = fork();
-        if (pid == 0)
-        {
-            wait(NULL);
-        }
-        else if (pid != 0)
-        {
-            recv(newSocket, buffer, 1024, 0);
-        }
-    }
+    int clientSocket = accept(server_socket, NULL, NULL);
+    printf("______Connection Established______\n");
+    recv(clientSocket, msgRecv, sizeof(msgRecv), 0);
+    printf("Msg Received : %s\n", msgRecv);
+    send(clientSocket, msgSend, sizeof(msgSend), 0);
+    close(server_socket);
     return 0;
 }
